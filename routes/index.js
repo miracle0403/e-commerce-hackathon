@@ -83,10 +83,54 @@ router.get('/register', function(req, res, next) {
 
 //become a seller
 
-//
+//get the page to fill in the address
+router.get('/sendgift/:orderid', function(req, res, next) {	
+	var order_id = req.params.order_id;
+	res.render('cart', { 
+		title: sitetitle, 
+		subtitle: "Enter Receiver Location", 
+		orderId: order_id
+	});	
+});
+
+//get cart
+router.get('/cart/:orderid', function(req, res, next) {	
+	var order_id = req.params.order_id;
+	db.query('SELECT * FROM cart WHERE order_id = ?', [order_id], function(err, results, fields){
+		if (err) throw err;
+		var cart = results;
+		res.render('cart', { 
+			title: sitetitle, 
+			subtitle: "User Registration" 
+		});
+	});	
+});
+
+	
+
+
+//edit cart
+router.post('/editcart/:orderId', function(req, res, next) {
+	var orderId = req.params.orderId;
+	var product = req.body.product;
+	var colour = req.body.colour;
+	var size = req.body.size;
+	var quantity = req.body.quantity;
+	var i = 0;
+	
+	//enter them all into the cart table with a while loop.
+	while(i < product.length){
+		//update the information.
+		db.query('UPDATE cart SET colour = ? and size = ? and quantity = ? WHERE order_id = ? ', [colour[i], size[i], quantity[i], order_id], function(err, results, fields){
+			if (err) throw err;
+		i++
+		});
+	}
+	res.redirect("/receiver/" + orderId)
+});	
+
 
 //post add to cart
-
 router.post('/addtocart/:productId', function(req, res, next) {
 	var product = req.params.productId;
 	var url =  req.originalUrl;
@@ -123,8 +167,6 @@ router.post('/addtocart/:productId', function(req, res, next) {
 		}
 	});
 });	
-	
-	
 	
 	
 
